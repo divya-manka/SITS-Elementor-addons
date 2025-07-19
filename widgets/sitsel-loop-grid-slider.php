@@ -213,7 +213,7 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
                 ]
             );
             $this->add_control(
-                'navigation',
+                'pagination',
                 [
                     'label' => esc_html__('Show Pagination', 'sitsel'),
                     'type' => \Elementor\Controls_Manager::SWITCHER,
@@ -226,6 +226,23 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
                     ],
                 ]
             );
+            $this->add_control(
+            'navigation',
+            [
+                'label' => esc_html__('Pagination Type', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::SELECT,
+                'default' => 'none',
+                'options' => [
+                    'owl-dots' => esc_html__('Dots', 'sitsel'),
+                    'owl-nav' => esc_html__('Arrow', 'sitsel'),
+                    'both' => esc_html__('Arrows-Nav', 'sitsel'),
+                    'none' => esc_html__('None', 'sitsel'),
+                ],
+                'condition' => [
+                    'layout' => 'slider',
+                ],
+            ]
+        );
 
 
         $this->end_controls_section();
@@ -334,9 +351,21 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
                 }
 
                 echo '</div>'; // .swiper-wrapper
-                echo '<div class="swiper-pagination"></div>';
-                echo '<div class="swiper-button-next"></div>';
-                echo '<div class="swiper-button-prev"></div>';
+                // Conditionally output navigation/pagination
+                if ($settings['navigation'] === 'owl-dots') {
+                    echo '<div class="swiper-pagination"></div>';
+                }
+
+                if ($settings['navigation'] === 'owl-nav') {
+                    echo '<div class="swiper-button-next"></div>';
+                    echo '<div class="swiper-button-prev"></div>';
+                }
+                if ($settings['navigation'] === 'both') {
+                    echo '<div class="swiper-pagination"></div>';
+                    echo '<div class="swiper-button-next"></div>';
+                    echo '<div class="swiper-button-prev"></div>';
+                }
+
                 echo '</div>'; // .swiper
             }
             else {
@@ -356,7 +385,7 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
                     echo '</div>';
                 }
                 echo'</div>';
-                  if ($settings['layout'] === 'grid' && $settings['navigation'] === 'yes') {
+                  if ($settings['layout'] === 'grid' && $settings['pagination'] === 'yes') {
                     $total_pages = $query->max_num_pages;
 
                     if ($total_pages > 1) {

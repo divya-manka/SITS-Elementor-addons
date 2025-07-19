@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: SITS Elementor Addons
-Description: A custom Elementor addon that provides  Widgets.
+Description: A custom Elementor addon that provides Widgets.
 Version: 1.0.0
 Author: Softechure
 */

@@ -31,15 +31,18 @@ function sits_elementor_addons_init() {
             ]
         );
     });
-    add_action( 'elementor/editor/after_enqueue_scripts', function() {
-    wp_enqueue_script(
-        'sitsel-post-grid-editor',
-        plugin_dir_url(__FILE__) . 'assets/js/sitsel-post-grid.js',
-        [ 'jquery' ],
-        '1.0.0',
-        true
-    );
-});
+    function sitsel_enqueue_loop_grid_assets() {
+	wp_register_script(
+		'sitsel-post-grid',
+		plugin_dir_url(__FILE__) . 'assets/js/sitsel-post-grid.js',
+		[ 'elementor-frontend' ],
+		'1.0',
+		true
+        );
+    }
+    add_action( 'elementor/frontend/after_register_scripts', 'sitsel_enqueue_loop_grid_assets' );
+
+
 
 
     // Register title  widget after Elementor is ready
@@ -49,10 +52,12 @@ function sits_elementor_addons_init() {
     });
 
      // Register Loop Grid   widget 
-     add_action( 'elementor/widgets/register', function( $widgets_manager ) {
-        require_once plugin_dir_path( __FILE__ ) . 'widgets/sitsel-post-grid.php';
-        $widgets_manager->register( new \Sitsel_Post_Grid_Widget() );
-    });
+     function sitsel_register_loop_grid_widget( $widgets_manager ) {
+	require_once( __DIR__ . '/widgets/sitsel-loop-grid.php' );
+	$widgets_manager->register( new \sitsel_Loop_Grid_Widget() );
+    }
+    add_action( 'elementor/widgets/register', 'sitsel_register_loop_grid_widget' );
+
 
 }
 add_action( 'plugins_loaded', 'sits_elementor_addons_init' );

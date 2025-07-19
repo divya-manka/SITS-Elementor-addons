@@ -1,0 +1,11 @@
+*{
+    margin:0px;
+    padding:0px;
+    box-sizing: border-box;
+}
+.sitsel-pagination .page-numbers{
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap:20px;
+}

@@ -33,8 +33,6 @@ function sits_elementor_addons_init() {
     });
 
 
-
-
     // Register Elementor Widgets
     add_action( 'elementor/widgets/register', function( $widgets_manager ) {
         require_once __DIR__ . '/widgets/title-widget.php';

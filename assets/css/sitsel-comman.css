@@ -9,3 +9,34 @@
     list-style: none;
     gap:20px;
 }
+.sitsel-testimonial-box {
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    text-align: center;
+}
+.sitsel-testimonial-meta
+ {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+.sitsel-author-profile .sitsel-author-img
+ {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+
+.sitsel-company-logo {
+    max-width: 80px;
+    margin-bottom: 10px;
+}
+
+.sitsel-testimonial-rating .sitsel-star {
+    color: #ddd;
+}
+
+.sitsel-testimonial-rating .sitsel-star.filled {
+    color: #fbc02d;
+}

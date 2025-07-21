@@ -39,12 +39,14 @@ function sits_elementor_addons_init() {
         require_once __DIR__ . '/widgets/sitsel-loop-grid-slider.php';
         require_once __DIR__ . '/widgets/sitsel-popup-widget.php';
         require_once(__DIR__ . '/widgets/sitsel-loop-grid.php');  
+        require_once(__DIR__ . '/widgets/sitsel_testimonial_widget.php');  
 
         $widgets_manager->register( new \SITS_Title_Widget() );
         $widgets_manager->register( new \sitsel_Loop_Grid_Widget() );
         $widgets_manager->register( new \sitsel_Popup_Widget() );
         $widgets_manager->register( new \sitsel_Popup_Widget() );
         $widgets_manager->register(new \sitsel_loop_slider_widget());
+        $widgets_manager->register(new \sitsel_testimonial_widget());
     });
 
     add_action( 'elementor/frontend/after_enqueue_scripts', function() {

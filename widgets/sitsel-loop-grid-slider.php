@@ -229,7 +229,7 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
             $this->add_control(
             'navigation',
             [
-                'label' => esc_html__('Pagination Type', 'sitsel'),
+                'label' => esc_html__('Navigation Type', 'sitsel'),
                 'type' => \Elementor\Controls_Manager::SELECT,
                 'default' => 'none',
                 'options' => [
@@ -238,6 +238,50 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
                     'both' => esc_html__('Arrows-Nav', 'sitsel'),
                     'none' => esc_html__('None', 'sitsel'),
                 ],
+                'condition' => [
+                    'layout' => 'slider',
+                ],
+            ]
+        );
+        // Autoplay
+        $this->add_control(
+            'autoplay',
+            [
+                'label' => esc_html__('Autoplay', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::SWITCHER,
+                'label_on' => esc_html__('Yes', 'sitsel'),
+                'label_off' => esc_html__('No', 'sitsel'),
+                'return_value' => '1', // returns '1' when ON, '' when OFF
+                'default' => '1',
+                'condition' => [
+                    'layout' => 'slider',
+                ],
+            ]
+        );
+
+        // Autoplay Timeout
+        $this->add_control(
+            'autoplay_timeout',
+            [
+                'label' => esc_html__('Autoplay Timeout (ms)', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::NUMBER,
+                'default' => 3000,
+                'condition' => [
+                    'layout' => 'slider',
+                ],
+            ]
+        );
+
+        // Loop
+        $this->add_control(
+            'loop',
+            [
+                'label' => esc_html__('Loop', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::SWITCHER,
+                'label_on' => esc_html__('Yes', 'sitsel'),
+                'label_off' => esc_html__('No', 'sitsel'),
+                'return_value' => '1', // returns '1' when ON, '' when OFF
+                'default' => '1',
                 'condition' => [
                     'layout' => 'slider',
                 ],
@@ -258,7 +302,7 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
         $this->add_control(
             'title_style_heading',
             [
-                'label' => esc_html__('Post Title', 'sits-el'),
+                'label' => esc_html__('Post Title', 'sitsel'),
                 'type' => \Elementor\Controls_Manager::HEADING,
                 'separator' => 'before',
             ]
@@ -267,7 +311,7 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
         $this->add_control(
             'title_color',
             [
-                'label' => esc_html__('Color', 'sits-el'),
+                'label' => esc_html__('Color', 'sitsel'),
                 'type' => \Elementor\Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .sitsel-post-title' => 'color: {{VALUE}};',
@@ -332,7 +376,14 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
  
         
            if ($is_slider) {
-                echo '<div class="swiper sitsel-slider" data-gap="' . esc_attr($gap) . '" data-slidesPerView="' . esc_attr($columns) . '">';
+            echo '<div class="swiper sitsel-slider" 
+                data-gap="' . esc_attr($gap) . '" 
+                data-slides-per-view="' . esc_attr($columns) . '" 
+                data-autoplay="' . esc_attr($settings['autoplay']) . '" 
+                data-autoplay-timeout="' . esc_attr($settings['autoplay_timeout']) . '" 
+                data-loop="' . esc_attr($settings['loop']) . '">';
+
+
                 echo '<div class="swiper-wrapper">';
 
                 while ($query->have_posts()) {
@@ -343,9 +394,10 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
                     echo '<div class="swiper-slide">';
                     echo '<div class="sitsel-slide-inner">';
                     if ($img_url) {
-                        echo '<img src="' . esc_url($img_url) . '" alt="' . esc_attr($title) . '" />';
+                       echo '<a href="' . esc_url( get_the_permalink() ) . '"><img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $title ) . '" /></a>';
+
                     }
-                    echo '<h3 class="sitsel-post-title">' . esc_html($title) . '</h3>';
+                    echo '<h3 class="sitsel-post-title">  <a href="<?php the_permalink(); ?>">' . esc_html($title) . '</a></h3>';
                     echo '</div>';
                     echo '</div>';
                 }
@@ -378,9 +430,10 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
                     echo '<div class="grid-slide">';
                     echo '<div class="sitsel-grid-inner">';
                     if ($img_url) {
-                        echo '<img src="' . esc_url($img_url) . '" alt="' . esc_attr($title) . '" />';
+                     echo '<a href="' . esc_url( get_the_permalink() ) . '"><img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $title ) . '" /></a>';
+
                     }
-                    echo '<h3 class="sitsel-post-title">' . esc_html($title) . '</h3>';
+                    echo '<h3 class="sitsel-post-title">  <a href="<?php the_permalink(); ?>">' . esc_html($title) . '</a></h3>';
                     echo '</div>';
                     echo '</div>';
                 }
@@ -415,35 +468,43 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
     if ($is_slider) {
         ?>
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const sliderEl = document.querySelector('.sitsel-slider');
-                const spaceBetween = parseInt(sliderEl?.getAttribute('data-gap')) || 20;
-                const slidesPerView = parseInt(sliderEl?.getAttribute('data-slidesPerView')) || 3;
+           document.addEventListener('DOMContentLoaded', function () {
+            const sliderEl = document.querySelector('.sitsel-slider');
+            if (!sliderEl) return;
 
-                new Swiper('.sitsel-slider', {
-                    loop: true,
-                    slidesPerView: slidesPerView,
-                    spaceBetween: spaceBetween,
-                    pagination: {
-                        el: '.swiper-pagination',
-                        clickable: true,
+            const spaceBetween = parseInt(sliderEl.getAttribute('data-gap')) || 20;
+            const slidesPerView = parseInt(sliderEl.getAttribute('data-slides-per-view')) || 3;
+            const autoplayEnabled = sliderEl.getAttribute('data-autoplay') === '1';
+            const autoplayTimeout = parseInt(sliderEl.getAttribute('data-autoplay-timeout')) || 3000;
+            const loopEnabled = sliderEl.getAttribute('data-loop') === '1';
+
+            new Swiper('.sitsel-slider', {
+                loop: loopEnabled,
+                autoplay: autoplayEnabled ? { delay: autoplayTimeout } : false,
+                speed: autoplayTimeout,
+                slidesPerView: slidesPerView,
+                spaceBetween: spaceBetween,
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    768: {
+                        slidesPerView: 2,
+                        spaceBetween: spaceBetween
                     },
-                    navigation: {
-                        nextEl: '.swiper-button-next',
-                        prevEl: '.swiper-button-prev',
-                    },
-                    breakpoints: {
-                        768: {
-                            slidesPerView: 2,
-                            spaceBetween: spaceBetween
-                        },
-                        1024: {
-                            slidesPerView: slidesPerView,
-                            spaceBetween: spaceBetween
-                        }
+                    1024: {
+                        slidesPerView: slidesPerView,
+                        spaceBetween: spaceBetween
                     }
-                });
+                }
             });
+        });
+
         </script>
 
         <?php

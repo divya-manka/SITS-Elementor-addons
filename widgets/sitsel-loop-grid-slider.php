@@ -1,4 +1,5 @@
 <?php
+use Elementor\Controls_Manager;
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
@@ -21,9 +22,8 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
         return 'eicon-posts-grid';
     }
 
-    public function get_categories()
-    {
-        return ['sitsel'];
+    public function get_categories() {
+        return [ 'sits-category' ];
     }
 
     public function get_keywords()
@@ -146,8 +146,18 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
                 'default' => 6,
             ]
         );
-       
-        
+
+        $this->add_control(
+            'acf_field_key',
+            [
+                'label' => __('Select ACF Field', 'plugin-name'),
+                'type' => \Elementor\Controls_Manager::SELECT,
+                'options' => $this->get_acf_fields_options(),
+                'default' => '',
+            ]
+        );
+
+
 
         $this->end_controls_section();
 
@@ -172,61 +182,59 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
             ]
         );
 
-            // Gap
-            $this->add_control(
-                'gap',
-                [
-                    'label' => esc_html__('Gap (px)', 'sitsel'),
-                    'type' => \Elementor\Controls_Manager::NUMBER,
-                    'default' => 30,
-                    'min' => 0,
-                    'selectors' => [
-                        '{{WRAPPER}} .sitsel-grid' => 'gap: {{VALUE}}px;',
-                        
-                    ],
-                ]
-            );
+        // Gap
+        $this->add_control(
+            'gap',
+            [
+                'label' => esc_html__('Gap (px)', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::NUMBER,
+                'default' => 30,
+                'min' => 0,
+                'selectors' => [
+                    '{{WRAPPER}} .sitsel-grid' => 'gap: {{VALUE}}px;',
 
-            // Columns
-            $this->add_responsive_control(
-                'columns',
-                [
-                    'label' => esc_html__('Columns', 'sitsel'),
-                    'type' => \Elementor\Controls_Manager::SELECT,
-                    'default' => '3',
-                    'tablet_default' => '2',
-                    'mobile_default' => '1',
-                    'options' => [
-                        '1' => '1',
-                        '2' => '2',
-                        '3' => '3',
-                        '4' => '4',
-                        '5' => '5',
-                        '6' => '6',
-                    ],
-                    // 'condition' => [
-                    //     'layout' => 'grid', // Only show for grid layout
-                    // ],
-                    'selectors' => [
-                        '{{WRAPPER}} .sitsel-grid' => 'display: grid; grid-template-columns: repeat({{VALUE}}, 1fr);',
-                    ],
-                ]
-            );
-            $this->add_control(
-                'pagination',
-                [
-                    'label' => esc_html__('Show Pagination', 'sitsel'),
-                    'type' => \Elementor\Controls_Manager::SWITCHER,
-                    'label_on' => esc_html__('Yes', 'sitsel'),
-                    'label_off' => esc_html__('No', 'sitsel'),
-                    'return_value' => 'yes',
-                    'default' => '',
-                    'condition' => [
-                        'layout' => 'grid',
-                    ],
-                ]
-            );
-            $this->add_control(
+                ],
+            ]
+        );
+
+        // Columns
+        $this->add_responsive_control(
+            'columns',
+            [
+                'label' => esc_html__('Columns', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::SELECT,
+                'default' => '3',
+                'tablet_default' => '2',
+                'mobile_default' => '1',
+                'options' => [
+                    '1' => '1',
+                    '2' => '2',
+                    '3' => '3',
+                    '4' => '4',
+                    '5' => '5',
+                    '6' => '6',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .sitsel-grid' => 'display: grid; grid-template-columns: repeat({{VALUE}}, 1fr);',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'pagination',
+            [
+                'label' => esc_html__('Show Pagination', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::SWITCHER,
+                'label_on' => esc_html__('Yes', 'sitsel'),
+                'label_off' => esc_html__('No', 'sitsel'),
+                'return_value' => 'yes',
+                'default' => '',
+                'condition' => [
+                    'layout' => 'grid',
+                ],
+            ]
+        );
+        $this->add_control(
             'navigation',
             [
                 'label' => esc_html__('Navigation Type', 'sitsel'),
@@ -291,7 +299,7 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
 
         $this->end_controls_section();
 
-         $this->start_controls_section(
+        $this->start_controls_section(
             'style_section',
             [
                 'label' => esc_html__('Style', 'sitsel'),
@@ -314,7 +322,7 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
                 'label' => esc_html__('Color', 'sitsel'),
                 'type' => \Elementor\Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .sitsel-post-title' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .sitsel-post-title a' => 'color: {{VALUE}};',
                 ],
             ]
         );
@@ -326,195 +334,356 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
                 'selector' => '{{WRAPPER}} .sitsel-post-title',
             ]
         );
+
+        // thumbnail image style
+        $this->add_control(
+            'image_style_heading',
+            [
+                'label' => esc_html__('Post Thumbnail', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Border::get_type(),
+            [
+                'name' => 'image_border',
+                'selector' => '{{WRAPPER}} .sitsel-post-thumbnail img',
+            ]
+        );
+
+        $this->add_control(
+            'image_border_radius',
+            [
+                'label' => esc_html__('Border Radius', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::SLIDER,
+                'selectors' => [
+                    '{{WRAPPER}} .sitsel-post-thumbnail img' => 'border-radius: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        // expert style
+        $this->add_control(
+            'excerpt_style_heading',
+            [
+                'label' => esc_html__('Excerpt', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'excerpt_color',
+            [
+                'label' => esc_html__('Color', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .sitsel-post-excerpt' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'excerpt_typography',
+                'selector' => '{{WRAPPER}} .sitsel-post-excerpt',
+            ]
+        );
+
+        // read more btn
+        $this->add_control(
+            'read_more_style_heading',
+            [
+                'label' => esc_html__('Read More Button', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'read_more_color',
+            [
+                'label' => esc_html__('Text Color', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .sitsel-read-more a' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'read_more_background',
+            [
+                'label' => esc_html__('Background Color', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .sitsel-read-more' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'read_more_typography',
+                'selector' => '{{WRAPPER}} .sitsel-read-more a',
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Border::get_type(),
+            [
+                'name' => 'read_more_border',
+                'selector' => '{{WRAPPER}} .sitsel-read-more ',
+            ]
+        );
+
+        $this->add_control(
+            'read_more_border_radius',
+            [
+                'label' => esc_html__('Border Radius', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::SLIDER,
+                'selectors' => [
+                    '{{WRAPPER}} .sitsel-read-more ' => 'border-radius: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'read_more_padding',
+            [
+                'label' => esc_html__('Padding', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::DIMENSIONS,
+                'selectors' => [
+                    '{{WRAPPER}} .sitsel-read-more ' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+
+
         $this->end_controls_section();
-        
+
 
     }
 
-  protected function render() {
-    $settings = $this->get_settings_for_display();
-    $gap = isset($settings['gap']) ? (int) $settings['gap'] : 20;
-    $columns = isset($settings['columns']) ? (int) $settings['columns'] : 3;
+    protected function render()
+    {
+        $settings = $this->get_settings_for_display();
+        $gap = isset($settings['gap']) ? (int) $settings['gap'] : 20;
+        // $columns = isset($settings['columns']) ? (int) $settings['columns'] : 3;
+        $columns = [
+            'desktop' => isset($settings['columns']) ? (int) $settings['columns'] : 3,
+            'tablet' => isset($settings['columns_tablet']) ? (int) $settings['columns_tablet'] : 2,
+            'mobile' => isset($settings['columns_mobile']) ? (int) $settings['columns_mobile'] : 1,
+        ];
 
-   $paged = get_query_var('paged') ? get_query_var('paged') : 1;
+        $acf_key = isset($settings['acf_field_key']) ? $settings['acf_field_key'] : '';
 
-    $args = [
-        'post_type'      => $settings['post_type'],
-        'posts_per_page' => $settings['posts_per_page'],
-        'paged'          => $paged,
-    ];
+        // if (empty($acf_key)) {
+        //     echo 'No ACF field selected';
+        //     return;
+        // }
 
-    if ($settings['selection'] === 'manual' && !empty($settings['manual_posts'])) {
-        $args['post__in'] = $settings['manual_posts'];
-        $args['orderby'] = 'post__in';
-    }
 
-    if ($settings['selection'] === 'dynamic') {
-        if (!empty($settings['categories'])) {
-            $args['category_name'] = implode(',', $settings['categories']);
+
+        $paged = get_query_var('paged') ? get_query_var('paged') : 1;
+
+        $args = [
+            'post_type' => $settings['post_type'],
+            'posts_per_page' => $settings['posts_per_page'],
+            'paged' => $paged,
+        ];
+
+        if ($settings['selection'] === 'manual' && !empty($settings['manual_posts'])) {
+            $args['post__in'] = $settings['manual_posts'];
+            $args['orderby'] = 'post__in';
         }
-        if (!empty($settings['manual_tags'])) {
-            $args['tag_slug__in'] = $settings['manual_tags'];
+
+        if ($settings['selection'] === 'dynamic') {
+            if (!empty($settings['categories'])) {
+                $args['category_name'] = implode(',', $settings['categories']);
+            }
+            if (!empty($settings['manual_tags'])) {
+                $args['tag_slug__in'] = $settings['manual_tags'];
+            }
+            if (!empty($settings['offset'])) {
+                $args['offset'] = (int) $settings['offset'];
+            }
         }
-        if (!empty($settings['offset'])) {
-            $args['offset'] = (int) $settings['offset'];
+
+        $query = new \WP_Query($args);
+
+
+
+        if (!$query->have_posts()) {
+            echo '<div class="sitsel-not-found">' . esc_html($settings['not_found_text']) . '</div>';
+            return;
         }
-    }
 
-    $query = new \WP_Query($args);
-   
+        $is_slider = ($settings['layout'] === 'slider');
+
+        // Start wrapper
 
 
-    if (!$query->have_posts()) {
-        echo '<div class="sitsel-not-found">' . esc_html($settings['not_found_text']) . '</div>';
-        return;
-    }
-
-    $is_slider = ($settings['layout'] === 'slider');
-
-    // Start wrapper
- 
-        
-           if ($is_slider) {
+        if ($is_slider) {
             echo '<div class="swiper sitsel-slider" 
                 data-gap="' . esc_attr($gap) . '" 
-                data-slides-per-view="' . esc_attr($columns) . '" 
+                 data-slides-desktop="' . esc_attr($columns['desktop']) . '" 
+                data-slides-tablet="' . esc_attr($columns['tablet']) . '" 
+                data-slides-mobile="' . esc_attr($columns['mobile']) . '" 
                 data-autoplay="' . esc_attr($settings['autoplay']) . '" 
                 data-autoplay-timeout="' . esc_attr($settings['autoplay_timeout']) . '" 
                 data-loop="' . esc_attr($settings['loop']) . '">';
 
 
-                echo '<div class="swiper-wrapper">';
+            echo '<div class="swiper-wrapper">';
 
-                while ($query->have_posts()) {
-                    $query->the_post();
-                    $title = get_the_title();
-                    $img_url = get_the_post_thumbnail_url(get_the_ID(), 'large');
+            while ($query->have_posts()) {
+                $query->the_post();
+                $title = get_the_title();
+                $img_url = get_the_post_thumbnail_url(get_the_ID(), 'large');
+                $excerpt = get_the_excerpt();
+                $read_more_text = __('Read More', 'sitsel');
 
-                    echo '<div class="swiper-slide">';
-                    echo '<div class="sitsel-slide-inner">';
-                    if ($img_url) {
-                       echo '<a href="' . esc_url( get_the_permalink() ) . '"><img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $title ) . '" /></a>';
-
-                    }
-                    echo '<h3 class="sitsel-post-title">  <a href="<?php the_permalink(); ?>">' . esc_html($title) . '</a></h3>';
-                    echo '</div>';
-                    echo '</div>';
+                $field_key = $settings['acf_field_key'];
+                $value = get_field($field_key, get_the_ID());
+                if (is_array($value)) {
+                    $value = implode(', ', $value);
                 }
 
-                echo '</div>'; // .swiper-wrapper
-                // Conditionally output navigation/pagination
-                if ($settings['navigation'] === 'owl-dots') {
-                    echo '<div class="swiper-pagination"></div>';
+                echo '<div class="swiper-slide">';
+                echo '<div class="sitsel-slide-inner">';
+                if ($img_url) {
+                    echo '<a href="' . esc_url(get_the_permalink()) . '"><img src="' . esc_url($img_url) . '" alt="' . esc_attr($title) . '" /></a>';
+                }
+                echo '<h3 class="sitsel-post-title"><a href="' . esc_url(get_the_permalink()) . '">' . esc_html($title) . '</a></h3>';
+
+                $value = get_field($acf_key);
+
+                if ($value) {
+                    echo '<div class="sitsel-acf-fields-value">' . esc_html($value) . '</div>';
                 }
 
-                if ($settings['navigation'] === 'owl-nav') {
-                    echo '<div class="swiper-button-next"></div>';
-                    echo '<div class="swiper-button-prev"></div>';
-                }
-                if ($settings['navigation'] === 'both') {
-                    echo '<div class="swiper-pagination"></div>';
-                    echo '<div class="swiper-button-next"></div>';
-                    echo '<div class="swiper-button-prev"></div>';
-                }
-
-                echo '</div>'; // .swiper
-            }
-            else {
-                echo '<div class="sitsel-grid" >';
-                while ($query->have_posts()) {
-                    $query->the_post();
-                    $title = get_the_title();
-                    $img_url = get_the_post_thumbnail_url(get_the_ID(), 'large');
-
-                    echo '<div class="grid-slide">';
-                    echo '<div class="sitsel-grid-inner">';
-                    if ($img_url) {
-                     echo '<a href="' . esc_url( get_the_permalink() ) . '"><img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $title ) . '" /></a>';
-
-                    }
-                    echo '<h3 class="sitsel-post-title">  <a href="<?php the_permalink(); ?>">' . esc_html($title) . '</a></h3>';
-                    echo '</div>';
-                    echo '</div>';
-                }
-                echo'</div>';
-                  if ($settings['layout'] === 'grid' && $settings['pagination'] === 'yes') {
-                    $total_pages = $query->max_num_pages;
-
-                    if ($total_pages > 1) {
-                        echo '<div class="sitsel-pagination">';
-                        echo paginate_links([
-                            'total'     => $total_pages,
-                            'current'   => $paged,
-                            'format'    => '?paged=%#%',
-                            'type'      => 'list',
-                            'prev_text' => esc_html__('« Prev', 'sitsel'),
-                            'next_text' => esc_html__('Next »', 'sitsel'),
-                        ]);
-                        echo '</div>';
-                    }
-                }
-
-
+                echo '<div class="sitsel-post-excerpt">' . esc_html($excerpt) . '</div>';
+                echo '<div class="sitsel-read-more"><a href="' . esc_url(get_the_permalink()) . '">' . esc_html($read_more_text) . '</a></div>';
+                echo '</div></div>';
             }
 
-  
 
-     
- 
-    wp_reset_postdata();
+            echo '</div>'; // .swiper-wrapper
+            // Conditionally output navigation/pagination
+            if ($settings['navigation'] === 'owl-dots') {
+                echo '<div class="swiper-pagination"></div>';
+            }
 
-    // Swiper initialization if needed
-    if ($is_slider) {
-        ?>
-        <script>
-           document.addEventListener('DOMContentLoaded', function () {
-            const sliderEl = document.querySelector('.sitsel-slider');
-            if (!sliderEl) return;
+            if ($settings['navigation'] === 'owl-nav') {
+                echo '<div class="swiper-button-next"></div>';
+                echo '<div class="swiper-button-prev"></div>';
+            }
+            if ($settings['navigation'] === 'both') {
+                echo '<div class="swiper-pagination"></div>';
+                echo '<div class="swiper-button-next"></div>';
+                echo '<div class="swiper-button-prev"></div>';
+            }
 
-            const spaceBetween = parseInt(sliderEl.getAttribute('data-gap')) || 20;
-            const slidesPerView = parseInt(sliderEl.getAttribute('data-slides-per-view')) || 3;
-            const autoplayEnabled = sliderEl.getAttribute('data-autoplay') === '1';
-            const autoplayTimeout = parseInt(sliderEl.getAttribute('data-autoplay-timeout')) || 3000;
-            const loopEnabled = sliderEl.getAttribute('data-loop') === '1';
+            echo '</div>'; // .swiper
+        } else {
+            echo '<div class="sitsel-grid" >';
+            while ($query->have_posts()) {
+                $query->the_post();
+                $title = get_the_title();
+                $img_url = get_the_post_thumbnail_url(get_the_ID(), 'large');
+                $excerpt = get_the_excerpt();
+                $read_more_text = __('Read More', 'sitsel');
 
-            new Swiper('.sitsel-slider', {
-                loop: loopEnabled,
-                autoplay: autoplayEnabled ? { delay: autoplayTimeout } : false,
-                speed: autoplayTimeout,
-                slidesPerView: slidesPerView,
-                spaceBetween: spaceBetween,
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-                breakpoints: {
-                    768: {
-                        slidesPerView: 2,
-                        spaceBetween: spaceBetween
-                    },
-                    1024: {
-                        slidesPerView: slidesPerView,
-                        spaceBetween: spaceBetween
-                    }
+                $field_key = $settings['acf_field_key'];
+                $value = get_field($field_key, get_the_ID());
+                if (is_array($value)) {
+                    $value = implode(', ', $value);
                 }
-            });
-        });
 
-        </script>
+                echo '<div class="swiper-slide">';
+                echo '<div class="sitsel-slide-inner">';
+                if ($img_url) {
+                    echo '<a href="' . esc_url(get_the_permalink()) . '"><img src="' . esc_url($img_url) . '" alt="' . esc_attr($title) . '" /></a>';
+                }
+                echo '<h3 class="sitsel-post-title"><a href="' . esc_url(get_the_permalink()) . '">' . esc_html($title) . '</a></h3>';
+                $value = get_field($acf_key);
 
-        <?php
+                if ($value) {
+                    echo '<div class="sitsel-acf-fields-value">' . esc_html($value) . '</div>';
+                }
+                echo '<div class="sitsel-post-excerpt">' . esc_html($excerpt) . '</div>';
+                echo '<div class="sitsel-read-more"><a href="' . esc_url(get_the_permalink()) . '">' . esc_html($read_more_text) . '</a></div>';
+                echo '</div></div>';
+            }
+            echo '</div>';
+            if ($settings['layout'] === 'grid' && $settings['pagination'] === 'yes') {
+                $total_pages = $query->max_num_pages;
+
+                if ($total_pages > 1) {
+                    echo '<div class="sitsel-pagination">';
+                    echo paginate_links([
+                        'total' => $total_pages,
+                        'current' => $paged,
+                        'format' => '?paged=%#%',
+                        'type' => 'list',
+                        'prev_text' => esc_html__('« Prev', 'sitsel'),
+                        'next_text' => esc_html__('Next »', 'sitsel'),
+                    ]);
+                    echo '</div>';
+                }
+            }
+
+
+        }
+
+
+
+
+
+        wp_reset_postdata();
+
+
     }
-}
 
 
-   
+    private function get_acf_fields_options()
+    {
+        $options = [];
 
- // functions for get post type and categories
+        if (!function_exists('acf_get_field_groups')) {
+            return ['' => 'ACF not active'];
+        }
+
+        // Adjust post type if needed
+        $field_groups = acf_get_field_groups(['post_type' => 'post']);
+
+        if (!$field_groups) {
+            return ['' => 'No ACF Field Groups Found'];
+        }
+
+        foreach ($field_groups as $group) {
+            $fields = acf_get_fields($group['key']);
+
+            if (!$fields)
+                continue;
+
+            foreach ($fields as $field) {
+                $options[$field['name']] = $field['label'] . ' (' . $field['name'] . ')';
+            }
+        }
+
+        return !empty($options) ? $options : ['' => 'No ACF fields found'];
+    }
+
+
+
+    // functions for get post type and categories
     private function get_post_types()
     {
         $post_types = get_post_types(['public' => true], 'objects');
@@ -560,5 +729,8 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
         }
         return $options;
     }
+
+
+
 
 }

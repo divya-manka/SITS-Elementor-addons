@@ -21,8 +21,8 @@ class sitsel_Loop_Grid_Widget extends Widget_Base {
 	}
 
 	public function get_categories() {
-		return [ 'general' ];
-	}
+        return [ 'sits-category' ];
+    }
 
 	public function get_script_depends() {
 		return [ 'sitsel-post-grid' ];
@@ -71,16 +71,39 @@ class sitsel_Loop_Grid_Widget extends Widget_Base {
 		// 	]
 		// );
 
-		$this->add_responsive_control(
-			'sitsel_columns',
-			[
-				'label' => esc_html__( 'Columns', 'sitsel' ),
-				'type' => Controls_Manager::NUMBER,
-				'default' => 3,
-				'min' => 1,
-				'max' => 6,
-			]
-		);
+		// $this->add_responsive_control(
+		// 	'sitsel_columns',
+		// 	[
+		// 		'label' => esc_html__( 'Columns', 'sitsel' ),
+		// 		'type' => Controls_Manager::NUMBER,
+		// 		'default' => 3,
+		// 		'min' => 1,
+		// 		'max' => 6,
+		// 	]
+		// );
+		 // Columns
+        $this->add_responsive_control(
+            'sitsel_columns',
+            [
+                'label' => esc_html__('Columns', 'sitsel'),
+                'type' => \Elementor\Controls_Manager::SELECT,
+                'default' => '3',
+                'tablet_default' => '2',
+                'mobile_default' => '1',
+                'options' => [
+                    '1' => '1',
+                    '2' => '2',
+                    '3' => '3',
+                    '4' => '4',
+                    '5' => '5',
+                    '6' => '6',
+                ],
+                'selectors' => [
+					'{{WRAPPER}} .sitsel-post-grid' => 'display: grid; grid-template-columns: repeat({{VALUE}}, 1fr); gap: 20px;',
+				],
+
+            ]
+        );
 
 		$this->add_control(
 			'sitsel_posts_per_page',
@@ -260,7 +283,7 @@ class sitsel_Loop_Grid_Widget extends Widget_Base {
 		// }
 
 		// Loop Output
-		echo '<div class="sitsel-post-grid" style="display: grid; grid-template-columns: repeat(' . esc_attr( $settings['sitsel_columns'] ) . ', 1fr); gap: 20px;">';
+	echo '<div class="sitsel-post-grid">';
 
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) {

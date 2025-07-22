@@ -20,6 +20,8 @@
     display: flex;
     gap: 20px;
     align-items: center;
+    text-align: start;    
+    justify-content: center;
 }
 .sitsel-author-profile .sitsel-author-img
  {
@@ -39,4 +41,16 @@
 
 .sitsel-testimonial-rating .sitsel-star.filled {
     color: #fbc02d;
+}
+.sitsel-testimonial-slider .swiper-button-prev,
+.sitsel-testimonial-slider .swiper-button-next {
+    z-index: 10;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.sitsel-grid-inner ,.sitsel-slide-inner{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
 }

@@ -14,7 +14,7 @@ class sitsel_loop_slider_widget extends \Elementor\Widget_Base
 
     public function get_title()
     {
-        return esc_html__('SITSel Loop Grid / Slider', 'sitsel');
+        return esc_html__('Sitsel Loop Grid / Slider', 'sitsel');
     }
 
     public function get_icon()

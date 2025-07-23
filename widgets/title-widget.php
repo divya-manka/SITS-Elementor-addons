@@ -14,7 +14,7 @@ class SITS_Title_Widget extends Widget_Base {
     }
 
     public function get_title() {
-        return __( 'SITS Title', 'sits-elementor-addons' );
+        return __( 'Sitsel Title', 'sits-elementor-addons' );
     }
 
     public function get_icon() {

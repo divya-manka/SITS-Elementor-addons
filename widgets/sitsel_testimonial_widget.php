@@ -36,15 +36,15 @@ class sitsel_testimonial_widget extends Widget_Base
             'label' => esc_html__('Testimonials Content', 'sitsel'),
         ]);
 
-        // $this->add_control('source_type', [
-        //     'label' => esc_html__('Source', 'sitsel'),
-        //     'type' => Controls_Manager::SELECT,
-        //     'options' => [
-        //         'manual' => esc_html__('Manual Input', 'sitsel'),
-        //         'dynamic' => esc_html__('From Post Type', 'sitsel'),
-        //     ],
-        //     'default' => 'manual',
-        // ]);
+        $this->add_control('source_type', [
+            'label' => esc_html__('Content Source', 'sitsel'),
+            'type' => Controls_Manager::SELECT,
+            'default' => 'manual',
+            'options' => [
+                'manual' => esc_html__('Manual Input', 'sitsel'),
+                'dynamic' => esc_html__('Dynamic', 'sitsel'),
+            ],
+        ]);
 
         // Manual Testimonials
         $repeater = new Repeater();
@@ -112,7 +112,7 @@ class sitsel_testimonial_widget extends Widget_Base
             'label' => esc_html__('Testimonials', 'sitsel'),
             'type' => Controls_Manager::REPEATER,
             'fields' => $repeater->get_controls(),
-            // 'condition' => ['source_type' => 'manual'],
+            'condition' => ['source_type' => 'manual'],
             'default' => [
                 [
                     'author_name' => 'Alice Smith',
@@ -135,25 +135,29 @@ class sitsel_testimonial_widget extends Widget_Base
             ],
         ]);
 
-        // Dynamic (Post) Source
-        // $this->add_control('post_type', [
-        //     'label' => esc_html__('Select Post Type', 'sitsel'),
-        //     'type' => Controls_Manager::SELECT,
-        //     'options' => [
-        //         'testimonial' => 'Testimonial',
-        //         'post' => 'Post',
-        //         'page' => 'Page',
-        //     ],
-        //     'default' => 'testimonial',
-        //     'condition' => ['source_type' => 'dynamic'],
-        // ]);
+        $this->add_control('dynamic_post_type', [
+    'label' => esc_html__('Post Type', 'sitsel'),
+    'type' => Controls_Manager::SELECT,
+    'options' => get_post_types(['public' => true], 'names'),
+    'default' => 'testimonial',
+    'condition' => ['source_type' => 'dynamic'],
+]);
 
-        // $this->add_control('posts_per_page', [
-        //     'label' => esc_html__('Number of Testimonials', 'sitsel'),
-        //     'type' => Controls_Manager::NUMBER,
-        //     'default' => 5,
-        //     'condition' => ['source_type' => 'dynamic'],
-        // ]);
+$this->add_control('posts_per_page', [
+    'label' => esc_html__('Number of Posts', 'sitsel'),
+    'type' => Controls_Manager::NUMBER,
+    'default' => 5,
+    'condition' => ['source_type' => 'dynamic'],
+]);
+
+$this->add_control('template_id', [
+    'label' => esc_html__('Select Layout Template', 'sitsel'),
+    'type' => Controls_Manager::SELECT2,
+    'label_block' => true,
+    'options' => $this->get_elementor_templates(), // you'll define this function
+    'condition' => ['source_type' => 'dynamic'],
+]);
+
 
         $this->end_controls_section();
 
@@ -283,6 +287,7 @@ class sitsel_testimonial_widget extends Widget_Base
                     'value' => 'fas fa-quote-left',
                     'library' => 'fa-solid',
                 ],
+                 'condition' => ['source_type' => 'manual'],
             ]
         );
 
@@ -294,6 +299,7 @@ class sitsel_testimonial_widget extends Widget_Base
             'label' => esc_html__('Rating', 'sitsel'),
             'type' => Controls_Manager::SWITCHER,
             'default' => 'yes',
+             'condition' => ['source_type' => 'manual'],
         ]);
 
         $this->add_control('rating_scale', [
@@ -305,14 +311,19 @@ class sitsel_testimonial_widget extends Widget_Base
             ],
             'default' => '5',
             'condition' => ['rating' => 'yes'],
+              'condition' => [
+                'rating' => 'yes',
+                'source_type' => 'manual',
+            ],
         ]);
 
         $this->end_controls_section();
         // === STYLE TAB START ===
         $this->start_controls_section('style_testimonial', [
-            'label' => esc_html__('Testimonial Box', 'sitsel'),
-            'tab' => Controls_Manager::TAB_STYLE,
-        ]);
+                'label' => esc_html__('Testimonial Box', 'sitsel'),
+                'tab' => Controls_Manager::TAB_STYLE,
+            ]);
+
 
         $this->add_control('testimonial_bg', [
             'label' => esc_html__('Background Color', 'sitsel'),
@@ -625,108 +636,126 @@ class sitsel_testimonial_widget extends Widget_Base
 protected function render() {
     $settings = $this->get_settings_for_display();
 
-    $effect            = $settings['effect'] ?? 'slide';
-    $loop              = $settings['loop'] === 'yes';
-    $pagination        = $settings['pagination'] === 'yes';
-    $navigation        = $settings['navigation'] === 'yes';
-    $transition_speed  = floatval($settings['transition_speed'] ?? 0.7) * 1000;
+    $effect           = $settings['effect'] ?? 'slide';
+    $loop             = $settings['loop'] === 'yes';
+    $pagination       = $settings['pagination'] === 'yes';
+    $navigation       = $settings['navigation'] === 'yes';
+    $transition_speed = floatval($settings['transition_speed'] ?? 0.7) * 1000;
+    $source_type      = $settings['source_type'];
 
     echo '<div class="swiper sitsel-testimonial-slider"
-    data-effect="' . esc_attr($effect) . '"
-    data-loop="' . esc_attr($loop ? 'true' : 'false') . '"
-    data-speed="' . esc_attr($transition_speed) . '"
-    data-pagination="' . esc_attr($pagination ? 'true' : 'false') . '"
-    data-navigation="' . esc_attr($navigation ? 'true' : 'false') . '"
-    data-columns-desktop="' . esc_attr($settings['columns']) . '"
-    data-columns-tablet="' . esc_attr($settings['columns_tablet'] ?? $settings['columns']) . '"
-    data-columns-mobile="' . esc_attr($settings['columns_mobile'] ?? $settings['columns']) . '"
-    data-scroll="' . esc_attr($settings['slides_to_scroll']) . '"
-    data-gutter="' . esc_attr($settings['gutter']['size']) . '">';
-
+        data-effect="' . esc_attr($effect) . '"
+        data-loop="' . esc_attr($loop ? 'true' : 'false') . '"
+        data-speed="' . esc_attr($transition_speed) . '"
+        data-pagination="' . esc_attr($pagination ? 'true' : 'false') . '"
+        data-navigation="' . esc_attr($navigation ? 'true' : 'false') . '"
+        data-columns-desktop="' . esc_attr($settings['columns']) . '"
+        data-columns-tablet="' . esc_attr($settings['columns_tablet'] ?? $settings['columns']) . '"
+        data-columns-mobile="' . esc_attr($settings['columns_mobile'] ?? $settings['columns']) . '"
+        data-scroll="' . esc_attr($settings['slides_to_scroll']) . '"
+        data-gutter="' . esc_attr($settings['gutter']['size']) . '">';
 
     echo '<div class="swiper-wrapper">';
 
-    if (!empty($settings['testimonials']) && is_array($settings['testimonials'])) {
-        foreach ($settings['testimonials'] as $item) {
-            $title       = !empty($item['title']) ? $item['title'] : '';
-            $content     = !empty($item['content']) ? $item['content'] : '';
-            $author      = !empty($item['author']) ? $item['author'] : '';
-            $job         = !empty($item['job']) ? $item['job'] : '';
-            $rating      = !empty($item['rating']) ? $item['rating'] : '';
-            $author_img  = !empty($item['author_image']['url']) ? $item['author_image']['url'] : plugin_dir_url(dirname(__DIR__)) . 'assets/images/placeholder-image.webp';
-            $company_logo = !empty($item['company_logo']['url']) ? $item['company_logo']['url'] : '';
+    if ($source_type === 'dynamic') {
+        $query = new \WP_Query([
+            'post_type'      => $settings['dynamic_post_type'],
+            'posts_per_page' => $settings['posts_per_page'],
+        ]);
 
-            echo '<div class="swiper-slide">';
-            echo '<div class="sitsel-testimonial-box">';
-
-            // Company Logo
-            if ($company_logo) {
-                echo '<img class="sitsel-company-logo" src="' . esc_url($company_logo) . '" alt="Company Logo" />';
+        if ($query->have_posts()) {
+            while ($query->have_posts()) {
+                $query->the_post();
+                echo '<div class="swiper-slide">';
+                if (!empty($settings['template_id'])) {
+                    echo \Elementor\Plugin::instance()->frontend->get_builder_content_for_display($settings['template_id']);
+                } else {
+                    echo '<div class="sitsel-testimonial-box">';
+                    the_title('<h4 class="sitsel-testimonial-title">', '</h4>');
+                    echo '<div class="sitsel-testimonial-content">' . get_the_content() . '</div>';
+                    echo '</div>';
+                }
+                echo '</div>'; // swiper-slide
             }
+            wp_reset_postdata();
+        }
+    } else {
+        if (!empty($settings['testimonials']) && is_array($settings['testimonials'])) {
+            foreach ($settings['testimonials'] as $item) {
+                $title        = $item['title'] ?? '';
+                $content      = $item['content'] ?? '';
+                $author       = $item['author'] ?? '';
+                $job          = $item['job'] ?? '';
+                $rating       = $item['rating'] ?? '';
+                $author_img   = $item['author_image']['url'] ?? plugin_dir_url(dirname(__DIR__)) . 'assets/images/placeholder-image.webp';
+                $company_logo = $item['company_logo']['url'] ?? '';
 
-            // Quote Icon
-            if (!empty($settings['quote_icon']['value'])) {
-                if ($settings['quote_icon']['library'] === 'svg') {
+                echo '<div class="swiper-slide">';
+                echo '<div class="sitsel-testimonial-box">';
+
+                // Company Logo
+                if ($company_logo) {
+                    echo '<img class="sitsel-company-logo" src="' . esc_url($company_logo) . '" alt="Company Logo" />';
+                }
+
+                // Quote Icon
+                if (!empty($settings['quote_icon']['value'])) {
                     echo '<span class="sitsel-quote-icon">';
                     \Elementor\Icons_Manager::render_icon($settings['quote_icon'], ['aria-hidden' => 'true']);
                     echo '</span>';
-                } else {
-                    \Elementor\Icons_Manager::render_icon($settings['quote_icon'], ['class' => 'sitsel-quote-icon']);
-                }
-            }
-
-            // Title
-            if ($title) {
-                echo '<div class="sitsel-testimonial-title">' . esc_html($title) . '</div>';
-            }
-
-            // Content
-            if ($content) {
-                echo '<div class="sitsel-testimonial-content">' . wp_kses_post($content) . '</div>';
-            }
-
-            // Meta
-            echo '<div class="sitsel-testimonial-meta">';
-                echo '<div class="sitsel-author-profile">';
-                if ($author_img) {
-                    echo '<img class="sitsel-author-img" src="' . esc_url($author_img) . '" alt="' . esc_attr($author) . '" />';
-                }
-                echo '</div>';
-
-                echo '<div>';
-                if ($author) {
-                    echo '<h4 class="sitsel-testimonial-author">' . esc_html($author) . '</h4>';
-                }
-                if ($job) {
-                    echo '<span class="sitsel-testimonial-job">' . esc_html($job) . '</span>';
                 }
 
-                // Rating
-                if ($settings['rating'] === 'yes' && $rating) {
-                    $max = (int) $settings['rating_scale'];
-                    $score = (float) $rating;
-                    echo '<div class="sitsel-testimonial-rating">';
-                    for ($i = 1; $i <= $max; $i++) {
-                        echo '<span class="sitsel-star' . ($i <= $score ? ' filled' : '') . '">&#9733;</span>';
+                // Title
+                if ($title) {
+                    echo '<div class="sitsel-testimonial-title">' . esc_html($title) . '</div>';
+                }
+
+                // Content
+                if ($content) {
+                    echo '<div class="sitsel-testimonial-content">' . wp_kses_post($content) . '</div>';
+                }
+
+                // Meta
+                echo '<div class="sitsel-testimonial-meta">';
+                    echo '<div class="sitsel-author-profile">';
+                    if ($author_img) {
+                        echo '<img class="sitsel-author-img" src="' . esc_url($author_img) . '" alt="' . esc_attr($author) . '" />';
                     }
                     echo '</div>';
-                }
-                echo '</div>'; // close author info
-            echo '</div>'; // close testimonial-meta
 
-            echo '</div>'; // close testimonial-box
-            echo '</div>'; // close swiper-slide
+                    echo '<div>';
+                    if ($author) {
+                        echo '<h4 class="sitsel-testimonial-author">' . esc_html($author) . '</h4>';
+                    }
+                    if ($job) {
+                        echo '<span class="sitsel-testimonial-job">' . esc_html($job) . '</span>';
+                    }
+
+                    // Rating
+                    if (!empty($settings['rating']) && $settings['rating'] === 'yes' && $rating) {
+                        $max   = (int) ($settings['rating_scale'] ?? 5);
+                        $score = (float) $rating;
+                        echo '<div class="sitsel-testimonial-rating">';
+                        for ($i = 1; $i <= $max; $i++) {
+                            echo '<span class="sitsel-star' . ($i <= $score ? ' filled' : '') . '">&#9733;</span>';
+                        }
+                        echo '</div>';
+                    }
+                    echo '</div>'; // close author/job
+                echo '</div>'; // close testimonial-meta
+
+                echo '</div>'; // close testimonial-box
+                echo '</div>'; // close swiper-slide
+            }
         }
     }
 
     echo '</div>'; // .swiper-wrapper
 
-    // Pagination
     if ($pagination) {
         echo '<div class="swiper-pagination"></div>';
     }
 
-    // Navigation
     if ($navigation) {
         echo '<div class="swiper-button-prev"></div>';
         echo '<div class="swiper-button-next"></div>';
@@ -734,6 +763,7 @@ protected function render() {
 
     echo '</div>'; // .swiper
 }
+
 
 
 
@@ -748,5 +778,19 @@ protected function render() {
     {
         return ['swiper'];
     }
+    protected function get_elementor_templates() {
+    $templates = [];
+    $posts = get_posts([
+        'post_type' => 'elementor_library',
+        'posts_per_page' => -1,
+    ]);
+
+    foreach ($posts as $post) {
+        $templates[$post->ID] = $post->post_title;
+    }
+
+    return $templates;
+}
+
 }
 

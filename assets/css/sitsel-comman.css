@@ -48,9 +48,69 @@
     top: 50%;
     transform: translateY(-50%);
 }
-.sitsel-grid-inner ,.sitsel-slide-inner{
+.sitsel-grid-item-inner ,.sitsel-slide-inner{
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
+}
+
+
+.sitsel-read-more{
+    margin-top:20px;
+}
+
+
+.sitsel-image-overlay-wrap {
+    position: relative;
+    overflow: hidden;
+}
+.sitsel-image-overlay-wrap img{
+   transition: all 0.6s ease;
+}
+
+.sitsel-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.2);
+    opacity: 0;
+    transition: all 0.6s ease;
+}
+
+/* Animations on hover */
+.sitsel-anim-fade-in:hover .sitsel-image-overlay {
+    opacity: 1;
+}
+
+.sitsel-anim-fade-out .sitsel-image-overlay {
+    opacity: 1;
+}
+
+.sitsel-anim-fade-out:hover .sitsel-image-overlay {
+    opacity: 0;
+}
+
+.sitsel-anim-slide-up .sitsel-image-overlay {
+    transform: translateY(100%);
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+
+.sitsel-anim-slide-up:hover .sitsel-image-overlay {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.sitsel-anim-zoom-in .sitsel-image-overlay {
+    transform: scale(0.6);
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+
+.sitsel-anim-zoom-in:hover img {
+    transform: scale(1.2);
+    opacity: 1;
 }

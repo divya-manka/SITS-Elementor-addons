@@ -123,17 +123,7 @@ class sitsel_Loop_Grid_Widget extends Widget_Base
 		$this->start_controls_section('section_post_elements', [
 			'label' => esc_html__('Elements', 'sitsel'),
 		]);
-		$this->add_control(
-			'sitsel_feature_image',
-			[
-				'label' => esc_html__('Show Featured Image', 'sitsel'),
-				'type' => \Elementor\Controls_Manager::SWITCHER,
-				'label_on' => esc_html__('Show', 'sitsel'),
-				'label_off' => esc_html__('Hide', 'sitsel'),
-				'return_value' => 'yes',
-				'default' => 'yes',
-			]
-		);
+
 
 		$repeater = new Repeater();
 		$acf_fields = [];
@@ -166,7 +156,9 @@ class sitsel_Loop_Grid_Widget extends Widget_Base
 			'read_more' => __('Read More', 'sitsel'),
 			'category' => __('Category', 'sitsel'),
 			'tag' => __('Tags', 'sitsel'),
-			'custom_field' => __('Custom Field', 'sitsel')
+			'featured_image' => __('Featured Image', 'sitsel'),
+			'custom_field' => __('Custom Field (Text)', 'sitsel'),
+			'acf_image' => __('ACF Image Field', 'sitsel'),
 		];
 
 		if (!empty($acf_fields)) {
@@ -191,6 +183,15 @@ class sitsel_Loop_Grid_Widget extends Widget_Base
 				'element_type' => 'custom_field',
 			],
 		]);
+		$repeater->add_control('custom_field_key_image', [
+			'label' => esc_html__('Field Key (for Custom or ACF)', 'sitsel'),
+			'type' => Controls_Manager::TEXT,
+			'placeholder' => 'e.g., my_custom_image',
+			'label_block' => true,
+			'condition' => [
+				'element_type' => ['custom_field', 'acf_image'],
+			],
+		]);
 
 
 		$repeater->add_control('html_tag', [
@@ -212,16 +213,21 @@ class sitsel_Loop_Grid_Widget extends Widget_Base
 			],
 		]);
 
+
 		$this->add_control('post_elements', [
 			'label' => __('Post Elements', 'sitsel'),
 			'type' => Controls_Manager::REPEATER,
 			'fields' => $repeater->get_controls(),
+			'title_field' => '{{ element_type }}',
+
 			'default' => [
+				['element_type' => 'featured_image'],
 				['element_type' => 'title'],
 				['element_type' => 'date'],
 				['element_type' => 'excerpt'],
 			],
 		]);
+		;
 
 		$this->end_controls_section();
 
@@ -466,13 +472,6 @@ class sitsel_Loop_Grid_Widget extends Widget_Base
 			'label' => esc_html__('Read More', 'sitsel'),
 			'tab' => Controls_Manager::TAB_STYLE,
 		]);
-		$this->add_control('readmore_color', [
-			'label' => esc_html__('Color', 'sitsel'),
-			'type' => Controls_Manager::COLOR,
-			'selectors' => [
-				'{{WRAPPER}} .sitsel-post-readmore a' => 'color: {{VALUE}};',
-			],
-		]);
 
 		$this->add_group_control(
 			\Elementor\Group_Control_Typography::get_type(),
@@ -481,7 +480,122 @@ class sitsel_Loop_Grid_Widget extends Widget_Base
 				'selector' => '{{WRAPPER}} .sitsel-post-readmore a',
 			]
 		);
+
+		// Color (Normal / Hover)
+		$this->start_controls_tabs('tabs_readmore_color');
+
+		$this->start_controls_tab('tab_readmore_color_normal', [
+			'label' => esc_html__('Normal', 'sitsel'),
+		]);
+
+		$this->add_control('readmore_color', [
+			'label' => esc_html__('Color', 'sitsel'),
+			'type' => Controls_Manager::COLOR,
+			'selectors' => [
+				'{{WRAPPER}} .sitsel-post-readmore a' => 'color: {{VALUE}};',
+			],
+		]);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab('tab_readmore_color_hover', [
+			'label' => esc_html__('Hover', 'sitsel'),
+		]);
+
+		$this->add_control('readmore_color_hover_color', [
+			'label' => esc_html__('Hover Color', 'sitsel'),
+			'type' => Controls_Manager::COLOR,
+			'selectors' => [
+				'{{WRAPPER}} .sitsel-post-readmore a:hover' => 'color: {{VALUE}};',
+			],
+		]);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		
+		// Background Color (Normal / Hover)
+		$this->start_controls_tabs('tabs_readmore_background');
+
+		$this->start_controls_tab('tab_readmore_background_normal', [
+			'label' => esc_html__('Normal', 'sitsel'),
+		]);
+
+		$this->add_control('readmore_background_color', [
+			'label' => esc_html__('Background Color', 'sitsel'),
+			'type' => Controls_Manager::COLOR,
+			'selectors' => [
+				'{{WRAPPER}} .sitsel-post-readmore a' => 'background-color: {{VALUE}};',
+			],
+		]);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab('tab_readmore_background_hover', [
+			'label' => esc_html__('Hover', 'sitsel'),
+		]);
+
+		$this->add_control('readmore_background_hover_color', [
+			'label' => esc_html__('Background Hover Color', 'sitsel'),
+			'type' => Controls_Manager::COLOR,
+			'selectors' => [
+				'{{WRAPPER}} .sitsel-post-readmore a:hover' => 'background-color: {{VALUE}};',
+			],
+		]);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		// padding
+		$this->add_responsive_control(
+			'readmore_padding',
+			[
+				'label' => esc_html__('Padding', 'sitsel'),
+				'type' => \Elementor\Controls_Manager::DIMENSIONS,
+				'size_units' => ['px', '%', 'em'],
+				'selectors' => [
+					'{{WRAPPER}} .sitsel-post-readmore a' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'readmore_margin',
+			[
+				'label' => esc_html__('Margin', 'sitsel'),
+				'type' => \Elementor\Controls_Manager::DIMENSIONS,
+				'size_units' => ['px', '%', 'em'],
+				'selectors' => [
+					'{{WRAPPER}} .sitsel-post-readmore' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+		$this->add_group_control(
+			\Elementor\Group_Control_Border::get_type(),
+			[
+				'name' => 'readmore_border',
+				'label' => esc_html__('Border', 'sitsel'),
+				'selector' => '{{WRAPPER}} .sitsel-post-readmore a',
+			]
+		);
+
+		// Border radius
+		$this->add_responsive_control(
+			'readmore_border_radius',
+			[
+				'label' => esc_html__('Border Radius', 'sitsel'),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => ['px', '%', 'em'],
+				'selectors' => [
+					'{{WRAPPER}} .sitsel-post-readmore a' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
 		$this->end_controls_section();
+
 
 
 
@@ -615,16 +729,43 @@ class sitsel_Loop_Grid_Widget extends Widget_Base
 				} else {
 					// Fallback layout
 					echo '<div class="sitsel-post-grid-item">';
-					if (!empty($settings['sitsel_feature_image']) && $settings['sitsel_feature_image'] === 'yes') {
-						if (has_post_thumbnail()) {
-							echo '<div class="sitsel-post-thumbnail">';
-							the_post_thumbnail('medium');
-							echo '</div>';
-						}
-					}
+					// if (!empty($settings['sitsel_feature_image']) && $settings['sitsel_feature_image'] === 'yes') {
+					// 	if (has_post_thumbnail()) {
+					// 		echo '<div class="sitsel-post-thumbnail">';
+					// 		the_post_thumbnail('medium');
+					// 		echo '</div>';
+					// 	}
+					// }
 
 					foreach ($settings['post_elements'] as $item) {
 						switch ($item['element_type']) {
+							case 'featured_image':
+								if (has_post_thumbnail()) {
+									echo '<div class="sitsel-post-featured-image">';
+									the_post_thumbnail('medium');
+									echo '</div>';
+								}
+								break;
+
+							case 'acf_image':
+								if (!empty($item['custom_field_key_image']) && function_exists('get_field')) {
+									$image = get_field($item['custom_field_key_image'], get_the_ID());
+									if (!empty($image)) {
+										// If it's an image array (from ACF Image field)
+										if (is_array($image) && !empty($image['url'])) {
+											echo '<div class="sitsel-post-acf-image">';
+											echo '<img src="' . esc_url($image['url']) . '" alt="' . esc_attr($image['alt'] ?? '') . '" />';
+											echo '</div>';
+										}
+										// If it's just a URL
+										elseif (is_string($image)) {
+											echo '<div class="sitsel-post-acf-image">';
+											echo '<img src="' . esc_url($image) . '" alt="" />';
+											echo '</div>';
+										}
+									}
+								}
+								break;
 							case 'title':
 								$tag = isset($item['html_tag']) ? $item['html_tag'] : 'h3';
 								echo '<' . esc_attr($tag) . ' class="sitsel-post-title"><a href="' . get_permalink() . '">' . esc_html(get_the_title()) . '</a></' . esc_attr($tag) . '>';

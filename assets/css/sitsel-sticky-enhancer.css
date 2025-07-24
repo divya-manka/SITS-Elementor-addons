@@ -1,0 +1,415 @@
+/* Enhanced Sticky Enhancer CSS */
+/* Sticky Relation Styles */
+.sits-sticky-enhanced.sits-relation-viewport.is-sticky {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100vw !important;
+    max-width: 100vw !important;
+}
+
+.sits-sticky-enhanced.sits-relation-parent.is-sticky {
+    position: fixed !important;
+    left: 0;
+    right: 0;
+    width: 100% !important;
+}
+
+.sits-sticky-enhanced.sits-relation-column.is-sticky {
+    position: sticky !important;
+    top: 0;
+    width: 100% !important;
+}
+
+/* Location Styles */
+.sits-sticky-enhanced.sits-location-top.is-sticky {
+    top: 0 !important;
+    bottom: auto !important;
+}
+
+.sits-sticky-enhanced.sits-location-bottom.is-sticky {
+    top: auto !important;
+    bottom: 0 !important;
+}
+
+/* Scroll direction classes */
+.sits-sticky-enhanced.scroll-up {
+    transform: translateY(0);
+}
+
+.sits-sticky-enhanced.scroll-down {
+    transform: translateY(-100%);
+}
+
+.sits-sticky-enhanced.fade-in {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sits-sticky-enhanced.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Stick on scroll behavior - Hide on scroll down functionality */
+.sits-sticky-enhanced.is-sticky.sits-hidden-down {
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.sits-sticky-enhanced.sits-location-bottom.is-sticky.sits-hidden-down {
+    transform: translateY(100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+/* Smooth animations */
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
+
+@keyframes slideUpFromBottom {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideDownToBottom {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+
+.sits-sticky-enhanced.animate-down {
+    animation: slideDown 0.3s ease-out forwards;
+}
+
+.sits-sticky-enhanced.animate-up {
+    animation: slideUp 0.3s ease-out forwards;
+}
+
+.sits-sticky-enhanced.sits-location-bottom.animate-down {
+    animation: slideUpFromBottom 0.3s ease-out forwards;
+}
+
+.sits-sticky-enhanced.sits-location-bottom.animate-up {
+    animation: slideDownToBottom 0.3s ease-out forwards;
+}
+
+/* Placeholder to prevent content jump */
+.sits-sticky-placeholder {
+    display: none;
+    width: 100%;
+    height: 0;
+    transition: height 0.3s ease;
+}
+
+.sits-sticky-enhanced.is-sticky + .sits-sticky-placeholder {
+    display: block;
+}
+
+/* Device-specific visibility */
+/* Desktop visibility */
+@media (min-width: 1025px) {
+    .sits-sticky-enhanced:not(.sits-enabled-desktop) {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        z-index: auto !important;
+        width: auto !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+    
+    .sits-sticky-enhanced:not(.sits-enabled-desktop).is-sticky {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        z-index: auto !important;
+        width: auto !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+    
+    .sits-sticky-enhanced:not(.sits-enabled-desktop) + .sits-sticky-placeholder {
+        display: none !important;
+        height: 0 !important;
+    }
+}
+
+/* Tablet visibility */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .sits-sticky-enhanced:not(.sits-enabled-tablet) {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        z-index: auto !important;
+        width: auto !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+    
+    .sits-sticky-enhanced:not(.sits-enabled-tablet).is-sticky {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        z-index: auto !important;
+        width: auto !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+    
+    .sits-sticky-enhanced:not(.sits-enabled-tablet) + .sits-sticky-placeholder {
+        display: none !important;
+        height: 0 !important;
+    }
+}
+
+/* Mobile visibility */
+@media (max-width: 767px) {
+    .sits-sticky-enhanced:not(.sits-enabled-mobile) {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        z-index: auto !important;
+        width: auto !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+    
+    .sits-sticky-enhanced:not(.sits-enabled-mobile).is-sticky {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        z-index: auto !important;
+        width: auto !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+    
+    .sits-sticky-enhanced:not(.sits-enabled-mobile) + .sits-sticky-placeholder {
+        display: none !important;
+        height: 0 !important;
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .sits-sticky-enhanced.is-sticky {
+        position: fixed !important;
+        left: 0;
+        right: 0;
+        width: 100% !important;
+    }
+    
+    .sits-sticky-enhanced.sits-relation-viewport.is-sticky {
+        width: 100vw !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+}
+
+/* Prevent flickering on scroll */
+.sits-sticky-enhanced {
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Enhanced transitions for better UX */
+.sits-sticky-enhanced.is-sticky {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Fix for Elementor containers */
+.elementor-container .sits-sticky-enhanced.is-sticky {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Ensure proper positioning for viewport relation */
+.sits-sticky-enhanced.sits-relation-viewport.is-sticky .elementor-container {
+    max-width: 1200px; /* Adjust as needed */
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Ensure proper positioning for parent relation */
+.sits-sticky-enhanced.sits-relation-parent.is-sticky .elementor-container {
+    max-width: 1200px; /* Adjust as needed */
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Column relation specific styles */
+.sits-sticky-enhanced.sits-relation-column.is-sticky {
+    position: sticky !important;
+    top: 0;
+    z-index: 10;
+}
+
+/* Smooth transition for sticky state */
+.sits-sticky-enhanced:not(.is-sticky) {
+    transition: all 0.3s ease;
+}
+
+/* Fix for nested elements */
+.sits-sticky-enhanced .elementor-row,
+.sits-sticky-enhanced .elementor-column {
+    transition: inherit;
+}
+
+/* Ensure sticky element stays on top */
+.sits-sticky-enhanced.is-sticky {
+    z-index: 999999 !important;
+}
+
+/* Position type specific styles */
+.sits-sticky-enhanced.sits-position-stick_immediately {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    width: 100% !important;
+}
+
+.sits-sticky-enhanced.sits-position-stick_immediately + .sits-sticky-placeholder {
+    display: block;
+}
+
+/* Additional mobile fixes */
+@media (max-width: 480px) {
+    .sits-sticky-enhanced.is-sticky {
+        width: 100vw !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+    
+    .sits-sticky-enhanced.sits-relation-viewport.is-sticky {
+        width: 100vw !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+}
+
+/* Performance optimizations */
+.sits-sticky-enhanced {
+    contain: layout style paint;
+}
+
+.sits-sticky-enhanced.is-sticky {
+    contain: layout style paint;
+    transform: translateZ(0);
+}
+
+/* Accessibility improvements */
+.sits-sticky-enhanced.is-sticky {
+    outline: none;
+}
+
+.sits-sticky-enhanced.is-sticky:focus {
+    outline: 2px solid #005cee;
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    .sits-sticky-enhanced.is-sticky {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        z-index: auto !important;
+        width: auto !important;
+        transform: none !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+    
+    .sits-sticky-placeholder {
+        display: none !important;
+    }
+}
+.sits-sticky-enhanced {
+    transition: all 0.3s ease;
+    will-change: transform, opacity, height;
+    position: relative;
+    z-index: 1;
+}
+
+.sits-sticky-enhanced.is-sticky {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    width: 100% !important;
+    transform: translateY(0);
+    will-change: transform;
+    background: inherit;
+}
+
+.sits-sticky-enhanced.is-sticky img {
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Position Type Styles */
+.sits-sticky-enhanced.sits-position-stick_immediately {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    width: 100% !important;
+}
+
+.sits-sticky-enhanced.sits-position-stick_with_offset {
+    /* Default sticky behavior with offset */
+}
+
